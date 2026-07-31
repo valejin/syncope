@@ -1,0 +1,37 @@
+name: "ISW2 Tests"
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  selected-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 25
+          cache: 'maven'
+
+      - name: Show versions
+        run: |
+          java -version
+          mvn -version
+
+      - name: Test DefaultConnIdBundleManager and NotificationDataBinderImpl
+        run: >
+          mvn -B -e -pl core/provisioning-java -am
+          -DskipTests=false
+          -Dmodernizer.skip=true
+          -Dianal.phase=none
+          -Drat.skip=true
+          -Dcheckstyle.skip=true
+          -Dmaven.checkstyle.skip=true
+          -Dsurefire.failIfNoSpecifiedTests=false
+          test
