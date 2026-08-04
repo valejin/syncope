@@ -191,4 +191,40 @@ under the License.
       </testResource>
     </testResources>
   </build>
+
+  <profiles>
+    <profile>
+      <id>pitest</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-maven</artifactId>
+            <version>1.25.8</version>
+            <dependencies>
+              <dependency>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-junit5-plugin</artifactId>
+                <version>1.2.3</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <targetClasses>
+                <param>org.apache.syncope.core.provisioning.java.data.NotificationDataBinderImpl</param>
+              </targetClasses>
+              <targetTests>
+                <param>org.apache.syncope.core.provisioning.java.data.NotificationDataBinderImplBBTest</param>
+                <param>org.apache.syncope.core.provisioning.java.data.NotificationDataBinderImplWBTest</param>
+                <param>org.apache.syncope.core.provisioning.java.data.NotificationDataBinderImplMTTest</param>
+              </targetTests>
+              <outputFormats>
+                <outputFormat>HTML</outputFormat>
+              </outputFormats>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>
