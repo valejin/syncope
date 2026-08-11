@@ -1,0 +1,4 @@
+org.apache.syncope.core.provisioning.java.data.randoop.NotificationDataBinderImplRandoopSeeds.build()
+org.apache.syncope.core.provisioning.java.data.randoop.NotificationDataBinderImplRandoopSeeds.notification()
+org.apache.syncope.core.provisioning.java.data.NotificationDataBinderImpl.update(org.apache.syncope.core.persistence.api.entity.Notification, org.apache.syncope.common.lib.to.NotificationTO)
+org.apache.syncope.core.provisioning.java.data.NotificationDataBinderImpl.getNotificationTO(org.apache.syncope.core.persistence.api.entity.Notification)
