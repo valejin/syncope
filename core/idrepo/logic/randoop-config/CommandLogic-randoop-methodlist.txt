@@ -1,0 +1,4 @@
+org.apache.syncope.core.logic.randoop.CommandLogicRandoopSeeds.build()
+org.apache.syncope.core.logic.randoop.CommandLogicRandoopSeeds.pageable()
+org.apache.syncope.core.logic.CommandLogic.search(java.lang.String, org.springframework.data.domain.Pageable)
+org.apache.syncope.core.logic.CommandLogic.run(org.apache.syncope.common.lib.command.CommandTO)
