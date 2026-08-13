@@ -1,13 +1,28 @@
 name: "ISW2 Tests"
+
 on:
   push:
     branches: [ master, main ]
   pull_request:
     branches: [ master, main ]
+  workflow_dispatch:   # permette di rilanciarlo a mano dalla UI
 
 jobs:
   selected-tests:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: core/idrepo/logic
+            test-pattern: "CommandLogic*"
+            label: CommandLogic
+          - module: core/provisioning-java
+            test-pattern: "NotificationDataBinderImpl*"
+            label: NotificationDataBinderImpl
+
+    name: "Test ${{ matrix.label }}"
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,14 +39,15 @@ jobs:
           java -version
           mvn -version
 
-      - name: Test DefaultConnIdBundleManager and NotificationDataBinderImpl
+      - name: Test ${{ matrix.label }}
         run: >
-          mvn -B -e -pl core/provisioning-java -am
-          -DskipTests=false
+          mvn -B -e -pl ${{ matrix.module }} -am
+          -Dtest=${{ matrix.test-pattern }}
+          -Dsurefire.failIfNoSpecifiedTests=false
+          -Dmaven.build.cache.enabled=false
           -Dmodernizer.skip=true
           -Dianal.phase=none
           -Drat.skip=true
           -Dcheckstyle.skip=true
           -Dmaven.checkstyle.skip=true
-          -Dsurefire.failIfNoSpecifiedTests=false
           test
