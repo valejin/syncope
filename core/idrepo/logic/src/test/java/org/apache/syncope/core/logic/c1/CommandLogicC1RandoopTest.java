@@ -6,30 +6,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 /**
  * Randoop C1-CommandLogic, seconda run (con --testclass=CommandTO aggiunto per
- * costruire un CommandTO reale, invece che sempre null, cosi' da raggiungere
- * NotFoundException reale in run() come gia' osservato su C0).
- *
- * 51 sequenze grezze curate a 12, in due passaggi:
- *  1) scartate integralmente 30 sequenze che esplorano solo CommandTO/CommandArgs/
- *     CommandTO.Builder senza mai interagire con CommandLogic - fuori scope
- *     dichiarato (conseguenza collaterale di --testclass=CommandTO, che rende
- *     CommandTO esplorabile come classe a se' stante, non solo come producer).
- *  2) sulle 21 sequenze restanti che toccano CommandLogic, deduplicate le
- *     anomalie ripetute (stesso criterio gia' usato su C0/C2/prima run C1):
- *     - run(null CommandTO) -> NPE getKey(): 1 occorrenza, tenuta test01
- *     - search() via costruttore rotto -> NPE su implementationDAO
- *       (findByTypeAndKeyword): 2 occorrenze, tenuta test03
- *     - run() via costruttore rotto -> NPE su implementationDAO (findById):
- *       2 occorrenze, tenuta test06
- *     - run(chiave="") -> NotFoundException("Implementation "): 3 occorrenze,
- *       tenuta test12
- *     - run(chiave=null) -> NotFoundException("Implementation null"):
- *       3 occorrenze, tenuta test15
- *     - run(chiave="hi!") -> NotFoundException("Implementation hi!"):
- *       4 occorrenze, tenuta test34
- *     - 6 sequenze di crescita su search() senza eccezione, nessun criterio di
- *       dedup applicabile: tenute tutte (test02, test33, test35, test36,
- *       test42, test49)
+ * costruire un CommandTO reale, invece che sempre null, così da raggiungere
+ * NotFoundException reale in run().
  */
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class CommandLogicC1RandoopTest {

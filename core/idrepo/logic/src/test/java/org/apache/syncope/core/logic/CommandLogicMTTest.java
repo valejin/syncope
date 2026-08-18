@@ -48,31 +48,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import jakarta.validation.Validator;
 
-/**
- * Suite di raffinamento guidata dal Mutation Testing (PIT) per {@link CommandLogic}.
- *
- * <p>Separata deliberatamente sia da {@code CommandLogicBBTest} (Fase 1, black-box) sia da
- * {@code CommandLogicWBTest} (Fase 2, raffinamento da JaCoCo/Control Flow Coverage): i test
- * qui contenuti non nascono ne' da un ragionamento sul contratto del metodo ne' da una riga
- * mai eseguita, ma dal fatto che PIT ha trovato un mutante **sopravvissuto su una riga gia'
- * coperta** — un difetto nella precisione dell'asserzione, non nella copertura. Le versioni
- * originali di questi scenari (TF1, TF2) restano intatte in {@code CommandLogicBBTest}, come
- * traccia di cosa la Category Partition aveva effettivamente prodotto in Fase 1; qui vivono
- * le versioni rafforzate, con l'asserzione aggiuntiva che le rende in grado di uccidere il
- * mutante.
- *
- * <p><b>Contesto del mutante</b> (report PIT, {@code target/pit-reports/.../CommandLogic.java.html}):
- * <pre>
- * L139: return runnable.run(command.getArgs() == null
- * L140:         ? ImplementationManager.emptyArgs(AuthContextUtils.getDomain(), impl)
- * L141:         : command.getArgs()).message();
- * </pre>
- * {@code NegateConditionalsMutator} inverte {@code == null} in {@code != null}, scambiando i
- * due rami del ternario. Ne' TF1 ne' TF2 (in {@code CommandLogicBBTest}) se ne accorgevano,
- * perche' entrambe stubbavano {@code runnable.run(any())}: qualunque {@code CommandArgs}
- * arrivi, lo stub risponde comunque "OK" e l'asserzione finale (solo sul valore di ritorno)
- * non ha modo di distinguere il comportamento corretto da quello mutato.
- */
+
+// Suite di raffinamento guidata dal Mutation Testing (PIT) per CommandLogic.
+
 @ExtendWith(MockitoExtension.class)
 class CommandLogicMTTest {
 
@@ -88,18 +66,18 @@ class CommandLogicMTTest {
     private static Implementation mockImplementation(final String key) {
         Implementation impl = mock(Implementation.class);
         // lenient: .getKey() sta solo dentro le lambda passate a ImplementationManager.build(...),
-        // che qui e' mockato - quelle lambda non vengono mai davvero invocate.
+        // che qui è mockato - quelle lambda non vengono mai davvero invocate.
         lenient().when(impl.getKey()).thenReturn(key);
         return impl;
     }
 
     /**
      * Versione rafforzata di TF1 (args=null). A differenza dell'originale, lo stub di
-     * {@code runnable.run(...)} e la verifica finale usano l'istanza esatta di
-     * {@code emptyArgs}, non {@code any()}: se il mutante scambiasse i rami del ternario,
-     * {@code runnable.run(...)} riceverebbe {@code null} invece di {@code emptyArgs}, lo
-     * stub non troverebbe corrispondenza, e {@code .message()} su un {@code Result} nullo
-     * lancerebbe {@code NullPointerException} — il test fallirebbe, uccidendo il mutante.
+     * {runnable.run(...)} e la verifica finale usano l'istanza esatta di
+     * {emptyArgs}, non {any()}: se il mutante scambiasse i rami del ternario,
+     * {runnable.run(...)} riceverebbe {null} invece di {emptyArgs}, lo
+     * stub non troverebbe corrispondenza, e {.message()} su un {Result} nullo
+     * lancerebbe {NullPointerException} — il test fallirebbe, uccidendo il mutante.
      */
     @Test
     @DisplayName("MT1 (rafforza TF1): runnable.run riceve esattamente emptyArgs, non un argomento qualunque")
@@ -132,8 +110,8 @@ class CommandLogicMTTest {
 
     /**
      * Versione rafforzata di TF2 (args non nullo). Stesso principio, ramo opposto del
-     * ternario: la verifica conferma che venga passato esattamente {@code command.getArgs()},
-     * non {@code emptyArgs()} ne' un argomento qualunque.
+     * ternario: la verifica conferma che venga passato esattamente {command.getArgs()},
+     * non {emptyArgs()} né un argomento qualunque.
      */
     @Test
     @DisplayName("MT2 (rafforza TF2): runnable.run riceve esattamente command.getArgs(), non un argomento qualunque")

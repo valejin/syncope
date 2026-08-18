@@ -131,10 +131,6 @@ class CommandLogicC1LLMZeroShotTest {
         Command<CommandArgs> runnable = mock(Command.class);
 
         // FIX: findById ritorna Optional<? extends Implementation> -> doReturn, non when().thenReturn()
-        // Nota: implementation1.getKey() NON va stubbato qui - viene letto solo dentro le
-        // lambda Supplier/Consumer passate a build(), mai invocate perche' build() e' mockato
-        // per restituire direttamente `runnable` (il suo corpo reale, che chiamerebbe
-        // supplier.get(), non gira mai). Stub morto -> UnnecessaryStubbingException.
         doReturn(Optional.of(implementation1)).when(implementationDAO).findById("cached-command");
         when(validator.validate(args)).thenReturn(Collections.emptySet());
         when(runnable.run(args)).thenReturn(new Command.Result(
@@ -143,9 +139,6 @@ class CommandLogicC1LLMZeroShotTest {
 
         String result;
         try (MockedStatic<ImplementationManager> implementationManager = mockStatic(ImplementationManager.class)) {
-            // FIX: run() chiama SEMPRE ImplementationManager.build(...), incondizionatamente -
-            // popolare perContextCommands a mano (come nell'originale generato da Copilot) non
-            // ha alcun effetto: la cache e' gestita internamente da build(), non da CommandLogic.
             implementationManager.when(() -> ImplementationManager.<Command<CommandArgs>>build(
                             anyString(), eq(implementation1), any(), any()))
                     .thenReturn(runnable);
@@ -167,7 +160,7 @@ class CommandLogicC1LLMZeroShotTest {
         Command<CommandArgs> runnable = mock(Command.class);
         ConstraintViolation<CommandArgs> violation = mock(ConstraintViolation.class);
         // I 4 getter restano necessari: InvalidEntityException itera sulle ConstraintViolation
-        // nel proprio costruttore per assemblare il messaggio (bug gia' catalogato nel progetto).
+        // nel proprio costruttore per assemblare il messaggio.
         jakarta.validation.Path propertyPath = mock(jakarta.validation.Path.class);
         when(propertyPath.toString()).thenReturn("someField");
         when(violation.getMessageTemplate()).thenReturn("{javax.validation.constraints.NotNull.message}");

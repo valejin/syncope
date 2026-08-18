@@ -206,9 +206,9 @@ class CommandLogicC2LLMToTTest {
         lenient().when(implementation.getKey()).thenReturn("command-1");
         doReturn(Optional.of(implementation)).when(implementationDAO).findById("command-1");
         when(validator.validate(args)).thenReturn(Set.of(violation));
-        // FIX (bug ricorrente, gia' visto 4 volte su C0): il costruttore reale di
+        // FIX (bug ricorrente, già visto 4 volte su C0): il costruttore reale di
         // InvalidEntityException legge 4 getter specifici sulla violation - un mock
-        // nudo senza questi stub causa NPE interna, non e' comportamento di CommandLogic.
+        // nudo senza questi stub causa NPE interna, non è comportamento di CommandLogic.
         jakarta.validation.Path propertyPath = mock(jakarta.validation.Path.class);
         org.mockito.Mockito.lenient().when(propertyPath.toString()).thenReturn("ctx");
         org.mockito.Mockito.lenient().when(violation.getMessageTemplate())
@@ -226,9 +226,9 @@ class CommandLogicC2LLMToTTest {
                     any(),
                     any())).thenReturn(runnable);
 
-            // FIX: l'eccezione realmente propagata da CommandLogic.run() e'
+            // FIX: l'eccezione realmente propagata da CommandLogic.run() è
             // SyncopeClientException(InvalidValues) - InvalidEntityException viene
-            // sollevata internamente ma e' catturata e ri-wrappata dallo stesso metodo.
+            // sollevata internamente ma è catturata e ri-wrappata dallo stesso metodo.
             SyncopeClientException ex = assertThrows(SyncopeClientException.class, () -> logic.run(commandTO));
             assertNotNull(ex);
             verify(runnable, never()).run(any());

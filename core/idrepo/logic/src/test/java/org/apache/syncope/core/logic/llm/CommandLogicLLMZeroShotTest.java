@@ -261,7 +261,7 @@ class CommandLogicLLMZeroShotTest {
 
             // InvalidEntityException è una ValidationException: viene intercettata dal
             // catch(ValidationException e) di CommandLogic.run(...) e ri-lanciata come
-            // SyncopeClientException(InvalidValues) - non propaga mai come tale.
+            // SyncopeClientException(InvalidValues).
             SyncopeClientException exception =
                     assertThrows(SyncopeClientException.class, () -> logic.run(commandTO));
 

@@ -44,12 +44,6 @@ import org.springframework.data.domain.Pageable;
 @ExtendWith(MockitoExtension.class)
 class CommandLogicC1LLMToTTest {
 
-    /*
-     * Extracted method signatures under test:
-     * - public Page<CommandTO> search(String keyword, Pageable pageable)
-     * - public String run(CommandTO command)
-     */
-
     @Mock
     private ImplementationDAO implementationDAO;
 
@@ -66,8 +60,8 @@ class CommandLogicC1LLMToTTest {
     private static Implementation implementation(final String key) {
         Implementation implementation = mock(Implementation.class);
         // lenient(): nella maggior parte dei test run() questo valore non viene mai letto,
-        // perche' le lambda che lo userebbero (dentro ImplementationManager.build(), sempre
-        // mockato) non vengono mai invocate - stesso motivo gia' isolato su Zero-shot.
+        // perché le lambda che lo userebbero (dentro ImplementationManager.build(), sempre
+        // mockato) non vengono mai invocate
         lenient().when(implementation.getKey()).thenReturn(key);
         return implementation;
     }
@@ -205,9 +199,9 @@ class CommandLogicC1LLMToTTest {
             assertEquals("second", logic.run(commandTO));
 
             // FIX: run() chiama SEMPRE ImplementationManager.build(...), incondizionatamente -
-            // il caching (se esiste) e' interno a build() stesso, non osservabile da CommandLogic.
+            // il caching (se esiste) è interno a build() stesso, non osservabile da CommandLogic.
             // Con due chiamate a run(), build() viene invocato due volte, non una sola come
-            // assumeva il test originale (stessa assunzione sbagliata gia' corretta su Zero-shot).
+            // assumeva il test originale.
             manager.verify(() -> ImplementationManager.<Command<CommandArgs>>build(
                     anyString(), eq(implementation), any(), any()), times(2));
         }
@@ -283,7 +277,7 @@ class CommandLogicC1LLMToTTest {
         Command<CommandArgs> runnable = mock(Command.class);
         ConstraintViolation<CommandArgs> violation = mock(ConstraintViolation.class);
         // I 4 getter restano necessari: InvalidEntityException itera sulle ConstraintViolation
-        // nel proprio costruttore per assemblare il messaggio (bug gia' catalogato nel progetto).
+        // nel proprio costruttore per assemblare il messaggio.
         jakarta.validation.Path propertyPath = mock(jakarta.validation.Path.class);
         when(propertyPath.toString()).thenReturn("someField");
         when(violation.getMessageTemplate()).thenReturn("{javax.validation.constraints.NotNull.message}");
@@ -302,7 +296,6 @@ class CommandLogicC1LLMToTTest {
             // FIX: InvalidEntityException estende jakarta.validation.ValidationException, quindi
             // viene ricatturata dentro lo stesso blocco try di run() e incartata in
             // SyncopeClientException(InvalidValues) - non esce mai da run() come tipo proprio
-            // (stesso fix gia' applicato su Zero-shot).
             assertThrows(SyncopeClientException.class, () -> logic.run(commandTO));
             verify(runnable, never()).run(args);
         }

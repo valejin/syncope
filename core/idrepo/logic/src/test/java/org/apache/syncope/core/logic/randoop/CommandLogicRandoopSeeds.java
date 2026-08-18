@@ -29,7 +29,7 @@ public final class CommandLogicRandoopSeeds {
 
     /**
      * Producer per Randoop: costruisce un CommandLogic con dipendenze
-     * mockate (non null), cosi' i metodi search()/run() vengono
+     * mockate (non null), così i metodi search()/run() vengono
      * effettivamente esercitati invece di fallire subito.
      */
     public static CommandLogic build() {

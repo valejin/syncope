@@ -60,30 +60,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-/**
- * Suite manuale Black-Box (Category Partition, Fase 1) per {@link CommandLogic}.
- *
- * I nomi dei metodi di test e delle {@code @DisplayName} riportano l'ID del test frame (TF)
- * e il codice dell'oracolo (O) documentati in CategoryPartition_CommandLogic.md. Ogni test e'
- * strutturato in tre blocchi commentati Arrange / Act / Assert:
- * <ul>
- *   <li><b>Arrange</b>: prepara i mock dei collaboratori e l'input secondo il test frame.</li>
- *   <li><b>Act</b>: invoca il metodo sotto test.</li>
- *   <li><b>Assert</b>: verifica l'oracolo atteso (valore restituito, eccezione, tipo di eccezione).</li>
- * </ul>
- *
- * {@code implementationDAO} e {@code validator} sono i collaboratori fissi di {@link CommandLogic}
- * (iniettati via costruttore da Mockito grazie a {@code @InjectMocks}). Gli oggetti che rappresentano
- * i singoli rappresentanti concreti dei test frame (istanze diverse di {@code Implementation},
- * {@code Pageable}, {@code ConstraintViolation}) restano invece mock "usa e getta" creati dagli
- * helper {@code mockImplementation}/{@code mockPageable}/{@code mockViolation}, perche' variano
- * da un test all'altro e non sono adatti a un campo {@code @Mock} fisso per classe.
- *
- * {@code @ExtendWith(MockitoExtension.class)} inizializza e rilascia automaticamente i campi
- * {@code @Mock}/{@code @InjectMocks} prima e dopo ogni {@code @Test} (incluso quelli nelle classi
- * {@code @Nested}), applicando di default uno stubbing "strict": uno stub mai utilizzato da un test
- * fa fallire il test stesso con {@code UnnecessaryStubbingException}, invece di passare in silenzio.
- */
+
+// Suite manuale Black-Box (Category Partition, Fase 1) per CommandLogic.
+
 @ExtendWith(MockitoExtension.class)
 class CommandLogicBBTest {
 
@@ -98,10 +77,6 @@ class CommandLogicBBTest {
 
     private static Implementation mockImplementation(final String key) {
         Implementation impl = mock(Implementation.class);
-        // lenient: .getKey() non e' letto in ogni scenario (es. pagina vuota per skip/limit,
-        // o ImplementationManager.build(...) mockato che non esegue le lambda che lo referenziano) -
-        // senza 'lenient' MockitoExtension segnalerebbe UnnecessaryStubbingException nei test dove
-        // il flusso specifico non arriva a leggerlo, pur essendo uno stub legittimo per altri test.
         lenient().when(impl.getKey()).thenReturn(key);
         return impl;
     }

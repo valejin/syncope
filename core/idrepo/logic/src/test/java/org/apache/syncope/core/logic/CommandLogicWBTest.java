@@ -32,7 +32,6 @@ import org.apache.syncope.common.lib.types.IdRepoImplementationType;
 import org.apache.syncope.core.persistence.api.dao.ImplementationDAO;
 import org.apache.syncope.core.persistence.api.entity.Implementation;
 import org.apache.syncope.core.spring.implementation.ImplementationManager;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,20 +44,10 @@ import org.springframework.data.domain.PageRequest;
 
 import jakarta.validation.Validator;
 
-/**
- * Suite di raffinamento strutturale (Fase 2) per {@link CommandLogic}, guidata dal report
- * JaCoCo generato dall'esecuzione di {@link CommandLogicBBTest} (Fase 1, black-box).
- *
- * <p>Separata deliberatamente da {@code CommandLogicBBTest}: i test qui contenuti non sono
- * derivabili dalla firma o dal contratto del metodo (Category Partition), ma dall'aver visto
- * una riga rossa/gialla nel report di copertura dopo l'esecuzione della suite black-box —
- * un ragionamento strutturale (white-box), non black-box. Tenerli in un file distinto rende
- * il confine tra le due fasi tracciabile a livello di progetto, non solo di commento.
- *
- * <p>Convenzione di naming: i frame di questa suite sono etichettati <b>RF</b> (Raffinamento
- * Frame), non <b>TF</b> (Test Frame, riservato alla Category Partition di Fase 1), per evitare
- * di far credere che siano stati derivati con lo stesso metodo.
- */
+
+// Suite di raffinamento strutturale (Fase 2) per CommandLogic, guidata dal report
+// JaCoCo generato dall'esecuzione di CommandLogicBBTest (Fase 1, black-box).
+
 @ExtendWith(MockitoExtension.class)
 class CommandLogicWBTest {
 
@@ -78,20 +67,11 @@ class CommandLogicWBTest {
     }
 
     /**
-     * Origine: report JaCoCo su {@code CommandLogic.java}, righe 77-79 — il blocco
-     * {@code catch (Exception e) { ... return null; }} dentro la {@code .map(...)} di
-     * {@code search(...)}, segnalato come non eseguito ({@code nc}) dopo l'esecuzione della
-     * suite black-box di Fase 1. Rinviato in Fase 1 perche' prevedere questo esito richiedeva
-     * di leggere il corpo del metodo (il catch che filtra l'elemento fallace, e l'ordine delle
-     * istruzioni che calcola {@code count} prima del filtro) — conoscenza strutturale, non
-     * deducibile dalla sola firma di {@code search(...)}.
-     *
-     * Scenario: keyword con match, pageable nominale, DAO con 3 elementi di cui uno fa fallire
-     * {@code ImplementationManager.emptyArgs(...)}.
-     * Oracolo: nessuna eccezione; {@code content} ha 2 elementi (quello fallace filtrato in
-     * silenzio), ma {@code count} resta 3 — conferma sperimentale del candidato bug gia'
-     * anticipato nel documento di progettazione (incoerenza tra dimensione della pagina
-     * restituita e conteggio totale).
+     * Scenario: keyword con match, pageable nominale, DAO con 3 elementi di cui uno fa
+     * fallire ImplementationManager.emptyArgs(...).
+     * Oracolo: nessuna eccezione; {content} ha 2 elementi (quello fallace filtrato in
+     * silenzio), ma {count} resta 3 — conferma sperimentale del candidato bug
+     * (incoerenza tra dimensione della pagina restituita e conteggio totale).
      */
     @Test
     @DisplayName("RF1: DAO con un elemento che fallisce la build -> content=2 ma count=3")

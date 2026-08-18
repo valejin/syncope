@@ -225,10 +225,10 @@ class CommandLogicC2LLMZeroShotTest {
         Command<CommandArgs> runnable = mock(Command.class);
         @SuppressWarnings("unchecked")
         ConstraintViolation<CommandArgs> violation = mock(ConstraintViolation.class);
-        // FIX (nota per Valentina): il costruttore reale di InvalidEntityException legge
+        // FIX: il costruttore reale di InvalidEntityException legge
         // 4 getter specifici (getMessageTemplate, getPropertyPath, getInvalidValue,
-        // getLeafBean) - un mock nudo senza questi stub causa NPE interna, non e' un
-        // comportamento di CommandLogic. Stesso bug ricorrente gia' documentato 4 volte
+        // getLeafBean) - un mock nudo senza questi stub causa NPE interna, non è un
+        // comportamento di CommandLogic. Stesso bug ricorrente già documentato 4 volte
         // su C0 (mai risolto autonomamente da Copilot).
         jakarta.validation.Path propertyPath = mock(jakarta.validation.Path.class);
         lenient().when(propertyPath.toString()).thenReturn("ctx");
@@ -242,11 +242,11 @@ class CommandLogicC2LLMZeroShotTest {
         when(validator.validate(args)).thenReturn(Set.of(violation));
 
         try (MockedStatic<ImplementationManager> ignored = mockImplementationBuild(implementation, runnable)) {
-            // FIX: l'eccezione realmente propagata da CommandLogic.run() e'
+            // FIX: l'eccezione realmente propagata da CommandLogic.run() è
             // SyncopeClientException(InvalidValues) - InvalidEntityException viene
-            // sollevata internamente ma e' catturata e ri-wrappata dal blocco
+            // sollevata internamente ma è catturata e ri-wrappata dal blocco
             // catch (ValidationException e) dello stesso metodo (verificato sul
-            // sorgente C0/C2: il catch e' invariato tra le due varianti su questo punto).
+            // sorgente C0/C2: il catch è invariato tra le due varianti su questo punto).
             SyncopeClientException exception =
                     assertThrows(SyncopeClientException.class, () -> logic.run(commandTO));
 
@@ -258,9 +258,9 @@ class CommandLogicC2LLMZeroShotTest {
 
     @Test
     @Disabled("Fallimento atteso: C2 ha rimosso sce.getElements().add(e.getMessage()) dal "
-            + "catch finale di run() (vedi Milestone4_RefactoringAnalysis_Falessi.md, riga 142). "
+            + "catch finale di run(). "
             + "Disabilitato solo per consentire l'analisi di mutation testing (PIT richiede una "
-            + "suite verde), come indicato dal prof. La regressione resta documentata e verificata "
+            + "suite verde). La regressione resta documentata e verificata "
             + "manualmente, non e' stata 'corretta' indebolendo l'asserzione.")
     void runWrapsCommandExecutionExceptionAsSyncopeClientException() throws Exception {
         Implementation implementation = implementation(KEY_ONE);
@@ -278,11 +278,11 @@ class CommandLogicC2LLMZeroShotTest {
             SyncopeClientException exception =
                     assertThrows(SyncopeClientException.class, () -> logic.run(commandTO));
 
-            // NON e' un bug del test: C2 ha rimosso sce.getElements().add(e.getMessage())
-            // dal catch finale di run() (vedi Milestone4_RefactoringAnalysis_Falessi.md, riga 142).
+            // NON è un bug del test: C2 ha rimosso sce.getElements().add(e.getMessage())
+            // dal catch finale di run().
             // Questo test, generato ex-novo da Copilot con il solo sorgente C2 allegato,
             // si aspetta comunque il comportamento "storico" (messaggio preservato) e FALLISCE:
-            // conferma indipendente della regressione, coerente con quanto gia' osservato
+            // conferma indipendente della regressione, coerente con quanto già osservato
             // rieseguendo le suite di C0 su C2. Da tenere COSI' COM'E' (fallimento atteso),
             // non da "correggere" indebolendo l'assert.
             assertTrue(exception.getElements().contains("boom"));
