@@ -146,18 +146,18 @@ public class NotificationDataBinderImpl implements NotificationDataBinder {
         notificationTO.getAbouts().entrySet().stream().
                 filter(entry -> StringUtils.isNotBlank(entry.getValue())).
                 forEach(entry -> anyTypeDAO.findById(entry.getKey()).ifPresentOrElse(
-                anyType -> {
-                    AnyAbout about = notification.getAbout(anyType).orElse(null);
-                    if (about == null) {
-                        about = entityFactory.newEntity(AnyAbout.class);
-                        about.setAnyType(anyType);
-                        about.setNotification(notification);
+                        anyType -> {
+                            AnyAbout about = notification.getAbout(anyType).orElse(null);
+                            if (about == null) {
+                                about = entityFactory.newEntity(AnyAbout.class);
+                                about.setAnyType(anyType);
+                                about.setNotification(notification);
 
-                        notification.add(about);
-                    }
-                    about.set(entry.getValue());
-                },
-                () -> LOG.debug("Invalid AnyType {} specified, ignoring...", entry.getKey())));
+                                notification.add(about);
+                            }
+                            about.set(entry.getValue());
+                        },
+                        () -> LOG.debug("Invalid AnyType {} specified, ignoring...", entry.getKey())));
 
         // 2. remove all abouts not contained in the TO
         notification.getAbouts().
@@ -178,7 +178,7 @@ public class NotificationDataBinderImpl implements NotificationDataBinder {
             implementationDAO.findById(notificationTO.getRecipientsProvider()).ifPresentOrElse(
                     notification::setRecipientsProvider,
                     () -> LOG.debug("Invalid {} {}, ignoring...",
-                        Implementation.class.getSimpleName(), notificationTO.getRecipientsProvider()));
+                            Implementation.class.getSimpleName(), notificationTO.getRecipientsProvider()));
         }
     }
 }

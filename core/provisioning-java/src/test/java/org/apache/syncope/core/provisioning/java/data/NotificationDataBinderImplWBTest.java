@@ -48,19 +48,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * Suite di raffinamento strutturale (Fase 2) per {@link NotificationDataBinderImpl}, guidata
- * dal report JaCoCo generato dall'esecuzione di {@link NotificationDataBinderImplBBTest}
- * (Fase 1, black-box).
- *
- * <p>Separata deliberatamente da {@code NotificationDataBinderImplBBTest}, per le stesse
- * ragioni gia' documentate per {@code CommandLogicWBTest}: il test qui contenuto nasce
- * dall'aver visto due rami parzialmente scoperti nel report di copertura, non dalla firma
- * del metodo.
- *
- * <p>Convenzione di naming: il frame di questa suite e' etichettato <b>RF</b> (Raffinamento
- * Frame), non <b>TF</b> (Test Frame, riservato alla Category Partition di Fase 1).
- */
+// Suite di raffinamento strutturale (Fase 2) per NotificationDataBinderImpl
+
 @ExtendWith(MockitoExtension.class)
 class NotificationDataBinderImplWBTest {
 
@@ -83,23 +72,14 @@ class NotificationDataBinderImplWBTest {
     private NotificationDataBinderImpl binder;
 
     /**
-     * Origine: report JaCoCo su {@code NotificationDataBinderImpl.java}, righe 151 e 164 —
+     * Origine: report JaCoCo su NotificationDataBinderImpl.java, righe 151 e 164 —
      * entrambe segnalate "1 of 2 branches missed" dopo l'esecuzione della suite black-box di
-     * Fase 1:
-     * <ul>
-     *   <li>L151 {@code if (about == null)}: mai esercitato il ramo {@code about != null}
-     *       (about gia' esistente, da aggiornare invece che creare ex novo).</li>
-     *   <li>L164 {@code removeIf(...)}: mai esercitato il ramo in cui
-     *       {@code containsKey(...)} vale {@code true} (about da mantenere, non rimuovere).</li>
-     * </ul>
+     * Fase 1.
      * Un solo scenario chiude entrambi i rami: uno stato iniziale di
-     * {@code notification.getAbouts()} con un {@code AnyAbout} il cui {@code AnyType} è
-     * PRESENTE anche in {@code notificationTO.getAbouts()} — a differenza di TF11 della suite
-     * black-box, che testava deliberatamente il caso opposto (chiave assente, about da
-     * rimuovere).
-     *
+     * notification.getAbouts(} con un AnyAbout il cui AnyType è
+     * PRESENTE anche in notificationTO.getAbouts().
      * Oracolo: nessuna eccezione; l'about esistente viene aggiornato in-place (nessuna nuova
-     * istanza creata da {@code entityFactory}, nessuna chiamata a {@code notification.add(...)});
+     * istanza creata da entityFactory, nessuna chiamata a notification.add(...));
      * l'about resta nella lista dopo la riconciliazione (non rimosso).
      */
     @Test

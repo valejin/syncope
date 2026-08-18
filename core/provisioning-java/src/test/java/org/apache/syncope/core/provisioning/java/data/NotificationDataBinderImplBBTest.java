@@ -58,24 +58,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * Suite manuale Black-Box (Category Partition, Fase 1) per {@link NotificationDataBinderImpl}.
- *
- * Struttura e convenzioni identiche a {@code CommandLogicBBTest}: {@code @Mock}/{@code @InjectMocks}
- * con {@code @ExtendWith(MockitoExtension.class)}, corpo Arrange/Act/Assert, Javadoc per ogni test
- * con scenario e oracolo atteso (rif. CategoryPartition_NotificationDataBinderImpl.md).
- *
- * <p><b>Nota su {@code notification} come mock.</b> {@code Notification} e' un'interfaccia di
- * persistenza priva di implementazione leggera utilizzabile nei test: resta quindi un mock, non un
- * campo {@code @Mock} (varia da test a test). Due dei suoi getter — {@code getEvents()} e
- * {@code getStaticRecipients()} — non hanno un setter corrispondente sull'interfaccia: il metodo
- * sotto test li muta *in place* con {@code .clear()} + {@code .addAll(...)}, quindi lo stub deve
- * restituire *sempre la stessa* lista mutabile (non una nuova ad ogni chiamata), altrimenti le due
- * chiamate opererebbero su istanze diverse. {@code getAbouts()}/{@code getAbout(...)} restituiscono
- * tipi con wildcard ({@code List<? extends AnyAbout>} / {@code Optional<? extends AnyAbout>}), quindi
- * richiedono {@code doReturn(...).when(...)} invece di {@code when(...).thenReturn(...)} — stesso
- * problema di generics gia' incontrato con {@code ImplementationDAO.findById(...)}.
- */
+// Suite manuale Black-Box (Category Partition, Fase 1) per NotificationDataBinderImpl.
+
+
 @ExtendWith(MockitoExtension.class)
 class NotificationDataBinderImplBBTest {
 
@@ -98,7 +83,7 @@ class NotificationDataBinderImplBBTest {
     private NotificationDataBinderImpl binder;
 
     /**
-     * Notification mockata con getEvents()/getStaticRecipients()/getAbouts() gia' agganciati a
+     * Notification mockata con getEvents()/getStaticRecipients()/getAbouts() già agganciati a
      * liste mutabili condivise tra le chiamate (necessario perché update() le muta in place).
      * lenient(): non tutti gli scenari arrivano a leggere getAbouts() (es. valori obbligatori
      * mancanti fanno uscire il metodo prima), quindi in quei casi lo stub resterebbe inutilizzato.

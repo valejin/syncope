@@ -49,30 +49,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * Suite di raffinamento guidata dal Mutation Testing (PIT) per {@link NotificationDataBinderImpl}.
- *
- * <p>Separata da {@code NotificationDataBinderImplBBTest} e {@code NotificationDataBinderImplWBTest}
- * per lo stesso motivo gia' documentato per {@code CommandLogic}: questi test nascono da mutanti
- * sopravvissuti su righe gia' coperte, non da un ragionamento sul contratto del metodo o da un
- * ramo mai eseguito. Le versioni originali dei TF corrispondenti restano intatte nel file BB.
- *
- * <p>19 mutanti sopravvissuti nel primo run di PIT, tutti {@code VoidMethodCallMutator} (rimozione
- * di una chiamata a un setter void), riconducibili a 3 pattern:
- * <ul>
- *   <li><b>MT1</b> — 8 mutanti su {@code getNotificationTO(...)} (L73,76,78-83): i campi "generici"
- *       (key, recipientsFIQL, recipientAttrName, selfAsRecipient, sender, subject, traceLevel,
- *       active), mai asseriti nella suite black-box perche' classificati come "senza ramo
- *       dichiarato osservabile" nel documento di progettazione.</li>
- *   <li><b>MT2</b> — 9 mutanti su {@code update(...)} (L104,109-114,153-154): stessi campi
- *       generici, lato opposto (setter su un mock mai verificati con {@code verify(...)}), piu'
- *       {@code about.setAnyType(...)}/{@code setNotification(...)} nel ramo "crea nuovo about".</li>
- *   <li><b>MT3</b> — 2 mutanti su {@code update(...)} (L106,116): {@code removed call to
- *       List::clear} su {@code staticRecipients}/{@code events}. Nella suite black-box lo stato
- *       iniziale di quelle liste e' sempre vuoto, quindi rimuovere {@code .clear()} non cambia
- *       nulla di osservabile — serve uno scenario con contenuto preesistente.</li>
- * </ul>
- */
+
+// Suite di raffinamento guidata dal Mutation Testing (PIT) per NotificationDataBinderImpl.
+
 @ExtendWith(MockitoExtension.class)
 class NotificationDataBinderImplMTTest {
 
@@ -112,7 +91,7 @@ class NotificationDataBinderImplMTTest {
     /**
      * MT1: rafforza lo scenario nominale di getNotificationTO() (equivalente a TF1 in
      * NotificationDataBinderImplBBTest) verificando anche gli 8 campi "generici" mai controllati
-     * in Fase 1. notificationTO e' un oggetto reale: bastano asserzioni dirette sui campi.
+     * in Fase 1. notificationTO è un oggetto reale: bastano asserzioni dirette sui campi.
      */
     @Test
     @DisplayName("MT1: getNotificationTO copia fedelmente anche i campi generici (key, FIQL, ecc.)")
@@ -133,7 +112,7 @@ class NotificationDataBinderImplMTTest {
         when(notification.getTraceLevel()).thenReturn(TraceLevel.SUMMARY);
         when(notification.isActive()).thenReturn(true);
         // abouts e recipientsProvider non stubbati: default mock (lista vuota / null) sufficiente,
-        // non sono oggetto di questo test (gia' coperti da TF1 in Fase 1)
+        // non sono oggetto di questo test (già coperti da TF1 in Fase 1)
 
         // Act
         NotificationTO to = binder.getNotificationTO(notification);

@@ -76,9 +76,7 @@ class NotificationDataBinderImplC1LLMToTTest {
     // FIX: helper condiviso usato in scenari diversi - alcuni test (es.
     // updateThrowsWhenTemplateDoesNotExist) escono con throw prima di arrivare alla
     // logica sugli abouts, quindi lo stub su getAbouts() risulterebbe "non usato" in
-    // quei casi specifici -> UnnecessaryStubbingException in strict mode. Stesso
-    // pattern gia' catalogato nel progetto (UnnecessaryStubbingException su chiamate
-    // dentro lambda/branch non sempre raggiunti), stessa correzione: lenient().
+    // quei casi specifici -> UnnecessaryStubbingException in strict mode. -> correzione: lenient().
     private static void stubMutableCollections(Notification notification) {
         org.mockito.Mockito.lenient().when(notification.getEvents()).thenReturn(new ArrayList<>());
         org.mockito.Mockito.lenient().when(notification.getStaticRecipients()).thenReturn(new ArrayList<>());
@@ -137,9 +135,7 @@ class NotificationDataBinderImplC1LLMToTTest {
         assertTrue(actual.isActive());
     }
 
-    // FIX: notification.setTemplate(template) e' incondizionato nel sorgente reale,
-    // eseguito subito dopo il controllo null e PRIMA del throw finale - viene quindi
-    // chiamato comunque, con null. never() era sbagliato.
+
     @Test
     @DisplayName("Expert C: update rejects a missing template reference")
     void updateThrowsWhenTemplateDoesNotExist() {
@@ -191,13 +187,8 @@ class NotificationDataBinderImplC1LLMToTTest {
         verify(notification).setRecipientsProvider(recipientsProvider);
     }
 
-    // RIMOSSO: "updateThrowsWhenRecipientsProviderHasWrongType" testava una validazione
-    // di tipo (ImplementationType) inesistente nel sorgente reale - nessun controllo di
-    // tipo viene mai eseguito su recipientsProvider. Nessun comportamento reale
-    // equivalente a cui riscriverlo; allucinazione pura, non un bug del test.
 
-    // FIX: riscritto. Il sorgente non valida mai recipientsFIQL (copia diretta, nessun
-    // controllo blank/null) - il test originale assumeva una validazione inesistente.
+
     @Test
     @DisplayName("Edge case: update accepts a blank recipientsFIQL without validation")
     void updateAcceptsBlankRecipientsFIQL() {
@@ -266,8 +257,8 @@ class NotificationDataBinderImplC1LLMToTTest {
     // FIX: il file grezzo assumeva che template == null producesse un NotificationTO con
     // template == null, senza eccezione. Il sorgente reale fa
     // notification.getTemplate().getKey() senza null-check: NullPointerException. Stesso
-    // identico finding gia' documentato per C0 via Randoop e riscontrato anche nel batch
-    // Zero-shot di C1 - terza conferma indipendente, buon segnale di convergenza.
+    // identico finding già documentato per C0 via Randoop e riscontrato anche nel batch
+    // Zero-shot di C1 - terza conferma indipendente
     @Test
     @DisplayName("Exception scenario: getNotificationTO throws NullPointerException when template is null")
     void getNotificationTOThrowsWhenTemplateIsNull() {
@@ -277,8 +268,7 @@ class NotificationDataBinderImplC1LLMToTTest {
         assertThrows(NullPointerException.class, () -> binder.getNotificationTO(notification));
     }
 
-    // Riscritto per non dipendere da template == null (coperto a parte sopra): verifica
-    // il resto delle associazioni opzionali con un template valido, cosi' da arrivare
+    // verifica il resto delle associazioni opzionali con un template valido, così da arrivare
     // davvero in fondo al metodo.
     @Test
     @DisplayName("Edge case: getNotificationTO handles a notification without recipients provider")

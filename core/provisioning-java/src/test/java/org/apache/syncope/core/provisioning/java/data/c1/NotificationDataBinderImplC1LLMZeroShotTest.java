@@ -126,8 +126,6 @@ class NotificationDataBinderImplC1LLMZeroShotTest {
     // FIX (e): il file grezzo assumeva che template == null producesse un NotificationTO
     // con template == null, senza eccezione. Il sorgente reale fa
     // notification.getTemplate().getKey() senza null-check: NullPointerException.
-    // Stesso identico finding già documentato per C0 via Randoop (vedi
-    // Randoop_Resoconto_Report.md, "getNotificationTO() con Notification mockato nudo").
     @Test
     void getNotificationTOThrowsNPEWhenTemplateIsNull() {
         Notification notification = mock(Notification.class);
@@ -136,9 +134,7 @@ class NotificationDataBinderImplC1LLMZeroShotTest {
         assertThrows(NullPointerException.class, () -> binder.getNotificationTO(notification));
     }
 
-    // Riscritto per non dipendere da template == null (che ora è coperto a parte,
-    // vedi sopra): verifica il resto delle associazioni opzionali/vuote con un
-    // template valido, cosi' da arrivare davvero in fondo al metodo.
+    // Verifica il resto delle associazioni opzionali/vuote con un template valido.
     @Test
     void getNotificationTOHandlesEmptyCollectionsAndNullRecipientsProvider() {
         Notification notification = mock(Notification.class);
@@ -167,10 +163,10 @@ class NotificationDataBinderImplC1LLMZeroShotTest {
     // FIX: il file grezzo pre-costruiva userAbout/groupAbout e assumeva che
     // entityFactory.newEntity(...) li restituisse nello stesso ordine in cui
     // notificationTO.getAbouts() (una Map) viene iterata - non garantito da una Map
-    // generica. Quando l'ordine di iterazione e' invertito, l'about sbagliato riceve
-    // il tipo sbagliato, e i verify() legati a un'identita' fissa (userAbout/groupAbout)
-    // falliscono per mismatch di argomenti, anche se il comportamento della classe e'
-    // corretto. Riscritto con mock "auto-consistenti" (getAnyType() rispecchia sempre
+    // generica. Quando l'ordine di iterazione è invertito, l'about sbagliato riceve
+    // il tipo sbagliato, e i verify() legati a un'identità fissa (userAbout/groupAbout)
+    // falliscono per mismatch di argomenti, anche se il comportamento della classe è
+    // corretto. Corretto con mock "auto-consistenti" (getAnyType() rispecchia sempre
     // l'ultimo setAnyType() ricevuto) e verifiche per contenuto, non per posizione.
     @Test
     void updateCopiesTransferObjectValuesAndResolvesReferences() throws Exception {
@@ -193,11 +189,7 @@ class NotificationDataBinderImplC1LLMZeroShotTest {
         doReturn(Optional.of(recipientsProvider)).when(implementationDAO).findById("provider-key");
         doReturn(Optional.of(userType)).when(anyTypeDAO).findById(AnyTypeKind.USER.name());
         doReturn(Optional.of(groupType)).when(anyTypeDAO).findById(AnyTypeKind.GROUP.name());
-        // FIX: perso nella riscrittura precedente. removeIf (passo 2 di update()) valuta
-        // anyAbout.getAnyType().getKey() per decidere se mantenere l'about - senza questi
-        // stub userType.getKey()/groupType.getKey() ritornano null, null non e' una chiave
-        // presente in notificationTO.getAbouts() ("USER"/"GROUP") -> removeIf rimuove
-        // entrambi gli about appena creati (size 0 invece di 2).
+
         when(userType.getKey()).thenReturn(AnyTypeKind.USER.name());
         when(groupType.getKey()).thenReturn(AnyTypeKind.GROUP.name());
         doAnswer(invocation -> {
@@ -209,11 +201,6 @@ class NotificationDataBinderImplC1LLMZeroShotTest {
             createdAbouts.add(about);
             return about;
         }).when(entityFactory).newEntity(AnyAbout.class);
-        // FIX (b): notification e' un mock nudo, notification.add(about) di default e' un
-        // no-op e non muta notificationAbouts. Senza questo stub l'assertEquals(2, ...)
-        // sotto fallirebbe (size() resterebbe 0) nonostante la logica reale della classe
-        // sia corretta - stesso bug gia' documentato per il batch ToT su C0
-        // (Resoconto_NotificationDataBinderImpl_JaCoCo_PIT.md).
         doAnswer(invocation -> {
             AnyAbout about = invocation.getArgument(0);
             notificationAbouts.add(about);
@@ -268,15 +255,7 @@ class NotificationDataBinderImplC1LLMZeroShotTest {
         verify(notification).add(aboutForGroup);
     }
 
-    // FIX (d), riscritto: il file grezzo assumeva un controllo esplicito su stringa
-    // blank per recipientsProvider, inesistente nel sorgente (il controllo reale e'
-    // "== null", non blank/isBlank). Con notificationTO minimale (solo
-    // recipientsProvider + traceLevel), template ed events mancanti fanno scattare
-    // RequiredValuesMissing PRIMA di arrivare al blocco recipientsProvider - quindi
-    // servono anche template/events validi per raggiungere davvero il ramo sotto
-    // test. Comportamento reale verificato: "   " (non null) fa comunque chiamare
-    // implementationDAO.findById(...); se non trovato, il provider resta non
-    // impostato (nessuna eccezione).
+
     @Test
     void updateCallsRecipientsProviderDaoAndLeavesItUnsetWhenProviderIsBlankAndNotFound() throws Exception {
         Notification notification = mock(Notification.class);
@@ -299,10 +278,7 @@ class NotificationDataBinderImplC1LLMZeroShotTest {
         verify(notification, never()).setRecipientsProvider(any());
     }
 
-    // FIX (d), riscritto: stessa causa del caso precedente. Il sorgente non ha
-    // alcuna guardia sul template, ne' null ne' blank: mailTemplateDAO.findById(...)
-    // viene sempre chiamato. Con una chiave blank non stubbata, la risoluzione
-    // fallisce (Optional.empty()) e la validazione lancia RequiredValuesMissing.
+
     @Test
     void updateThrowsClientExceptionWhenTemplateIsBlank() {
         Notification notification = mock(Notification.class);
@@ -332,13 +308,7 @@ class NotificationDataBinderImplC1LLMZeroShotTest {
         assertThrows(SyncopeClientException.class, () -> binder.update(notification, notificationTO));
     }
 
-    // FIX: come i due test blank sopra, mancava un template valido -> throw
-    // immediato prima di raggiungere la logica sotto test, e in piu' l'assunzione
-    // stessa era sbagliata: un recipientsProvider non trovato NON lancia
-    // un'eccezione, viene ignorato silenziosamente (LOG.debug) - stesso identico
-    // comportamento gia' verificato sopra per il caso "blank" (duplicato genuino,
-    // valore diverso in input, mantenuto per la policy di non scartare per sola
-    // ridondanza).
+
     @Test
     void updateLeavesRecipientsProviderUnsetWhenItDoesNotExist() {
         Notification notification = mock(Notification.class);
@@ -361,9 +331,7 @@ class NotificationDataBinderImplC1LLMZeroShotTest {
         verify(notification, never()).setRecipientsProvider(any());
     }
 
-    // FIX: stessa causa - mancava template valido. In piu', l'assunzione era
-    // sbagliata: un AnyType non risolvibile per un about viene ignorato
-    // silenziosamente (LOG.debug "Invalid AnyType..."), non genera eccezione.
+
     @Test
     void updateIgnoresAboutEntryWhenAnyTypeDoesNotExist() {
         Notification notification = mock(Notification.class);
@@ -406,7 +374,7 @@ class NotificationDataBinderImplC1LLMZeroShotTest {
         doReturn(Optional.of(template)).when(mailTemplateDAO).findById("template-key");
         // FIX: mancava lo stub di notification.getRecipientAttrName() — il sorgente
         // legge il valore dal parametro notification (mock), non dalla notificationTO
-        // passata; senza questo stub la chiamata reale e' parse(null, USER), diversa
+        // passata; senza questo stub la chiamata reale è parse(null, USER), diversa
         // da quella stubbata sotto -> PotentialStubbingProblem in strict mode.
         when(notification.getRecipientAttrName()).thenReturn("invalid.attr");
         when(intAttrNameParser.parse(eq("invalid.attr"), eq(AnyTypeKind.USER)))
@@ -415,9 +383,7 @@ class NotificationDataBinderImplC1LLMZeroShotTest {
         assertThrows(SyncopeClientException.class, () -> binder.update(notification, notificationTO));
     }
 
-    // FIX: mancava template valido. In piu', l'assunzione "never() parse" era
-    // sbagliata - il sorgente chiama intAttrNameParser.parse(...) incondizionatamente,
-    // anche con recipientAttrName == null, nessun null-check locale.
+
     @Test
     void updateParsesNullRecipientAttributeNameWithoutThrowing() throws Exception {
         Notification notification = mock(Notification.class);

@@ -37,20 +37,10 @@ import org.junit.jupiter.api.Test;
  * Test curati dalla generazione automatica Randoop (Fase 3), variante C1,
  * scope corretto: update()/getNotificationTO() soltanto, create() escluso
  * tramite --omit-methods, coerentemente con lo scope dichiarato fin dalla
- * Category Partition (Fase 1) e già applicato alla generazione originale su
- * C0.
- *
+ * Category Partition (Fase 1).
  * Randoop 4.3.4, JDK 25, --time-limit=60, seed factory
  * NotificationDataBinderImplRandoopSeeds riutilizzata senza modifiche
  * (firme pubbliche invariate tra C0 e C1).
- *
- * Generazione grezza: 35 regression test, 0 error-revealing.
- * Curati qui: 4 su 35 (le uniche sequenze che interagiscono con
- * NotificationDataBinderImpl; le restanti 31 manipolano solo NotificationTO
- * in isolamento, fuori scope) + 1 sequenza scartata (test22 originale:
- * costruttore grezzo con parametri null nonostante build() disponibile come
- * producer alternativo, stesso criterio di filtraggio già dichiarato in
- * Randoop_Resoconto_Report.md).
  */
 public class NotificationDataBinderImplC1RandoopTest {
 
@@ -94,13 +84,6 @@ public class NotificationDataBinderImplC1RandoopTest {
 
     // Randoop raw: RegressionTest0.test07 — identico, nel messaggio e nel
     // meccanismo, al finding già documentato per C0 in
-    // Randoop_Resoconto_Report.md ("getNotificationTO() con Notification
-    // mockato nudo"). Generato da Randoop con il costruttore grezzo di
-    // NotificationDataBinderImpl (parametri DAO/EntityFactory/IntAttrNameParser
-    // tutti null) invece di build(): lasciato invariato per fedeltà
-    // all'output originale. Non altera il risultato, perché
-    // getNotificationTO() non accede mai ai collaboratori iniettati via
-    // costruttore, solo al parametro Notification.
     @Test
     public void getNotificationTOThrowsNPEWhenNotificationTemplateIsNull() {
         MailTemplateDAO mailTemplateDAO = null;
@@ -115,7 +98,6 @@ public class NotificationDataBinderImplC1RandoopTest {
         // notification.getTemplate() ritorna null sul mock "nudo" (mai stubbato):
         // stato irraggiungibile su un'entità realmente persistita, per via del
         // vincolo JPA @ManyToOne(optional = false) su JPANotification.template
-        // (vedi Randoop_Resoconto_Report.md, §4) — non un bug funzionale.
         assertThrows(NullPointerException.class, () -> binder.getNotificationTO(notification));
     }
 }

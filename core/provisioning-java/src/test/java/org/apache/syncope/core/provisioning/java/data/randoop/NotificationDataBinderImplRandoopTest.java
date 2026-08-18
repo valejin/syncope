@@ -44,7 +44,7 @@ class NotificationDataBinderImplRandoopTest {
     // update()): il controllo non è "stringa vuota" ma risoluzione via
     // mailTemplateDAO.findById(...).orElse(null) — "template" viene
     // aggiunto alla lista se e solo se la chiave non risolve a un
-    // MailTemplate esistente. Comportamento genuino e riproducibile
+    // MailTemplate esistente. Comportamento riproducibile
     // identico con un DAO reale e una chiave inesistente: NON è un
     // artefatto del mock non stubbato. Nota anche che update() non
     // fallisce al primo controllo: accumula tutti i campi mancanti
@@ -65,17 +65,13 @@ class NotificationDataBinderImplRandoopTest {
 
     // RT3 — getNotificationTO(): con un Notification mockato "nudo"
     // (nessuno stub), getTemplate() ritorna null e il metodo fallisce
-    // con NPE alla prima chiamata a catena (.getTemplate().getKey()),
-    // NotificationDataBinderImpl.java:74.
+    // con NPE alla prima chiamata a catena (.getTemplate().getKey()).
     // NON è un difetto funzionale: JPANotification.template è annotato
     // @ManyToOne(fetch = FetchType.EAGER, optional = false) — su
     // un'istanza realmente persistita questo stato non è raggiungibile,
     // il vincolo è garantito da JPA/DB (confermato sul sorgente reale).
     // Test tenuto come documentazione dell'invariante implicita che il
-    // metodo assume ma non verifica localmente — rilevante per la
-    // sezione metodologica del report, ESCLUSO dal calcolo di
-    // reliability (punto 4.c) perché non rientra nel profilo
-    // operazionale di input realistici.
+    // metodo assume ma non verifica localmente.
     @Test
     void getNotificationToWithBareMockThrowsNpeOnUnenforcedInvariant() {
         NotificationDataBinderImpl binder = NotificationDataBinderImplRandoopSeeds.build();
