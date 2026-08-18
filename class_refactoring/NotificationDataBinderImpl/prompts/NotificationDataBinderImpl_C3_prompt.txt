@@ -1,0 +1,11 @@
+You are an expert Java developer working on Apache Syncope. I want to improve the maintainability of the class NotificationDataBinderImpl (package org.apache.syncope.core.provisioning.java.data), attached to this message as C0. This is a fresh, independent refactoring session, not a continuation of any previous variant.
+
+Create C3, a refactored version of C0, without changing its external behavior. C3 must remove the following SonarCloud code smell: on line 44, "Update this logger to use 'NotificationDataBinderImpl.class'" (Code Smell, Maintainability, Minor severity, ~5min effort, category Consistency, tags confusing/logging).
+
+C3 must also continue to pass all the tests attached to this message: the Black-Box suite and the Control-Flow (white-box) suite, both written for C0 and currently passing on it unchanged.
+
+Do not include in C3 any change different from what I asked. Consider that C3 must replace C0 and work with the same system components exactly as C0 does now: keep the same package declaration, the same class name, the same public API, and all public and protected method signatures unchanged, and do not modify or require changes to other classes.
+
+This is an important request: take all the time you need to provide a complete and accurate answer.
+
+Return the complete Java class only, with no markdown formatting and no explanation.

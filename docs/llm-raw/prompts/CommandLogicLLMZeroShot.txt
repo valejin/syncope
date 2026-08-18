@@ -1,0 +1,5 @@
+As a professional software tester who writes Java test methods, generate a complete JUnit 5 test file (CommandLogicLLMZeroShotTest.java) to test the following methods of the class named CommandLogic:
+- search(String keyword, Pageable pageable)
+- run(CommandTO command)
+
+Your output file must start with ###Test START## and finish with ###Test END##.

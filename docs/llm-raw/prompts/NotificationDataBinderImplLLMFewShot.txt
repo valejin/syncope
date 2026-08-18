@@ -1,0 +1,49 @@
+As a professional software tester who writes Java test methods, consider the following examples:
+
+@Test
+@DisplayName("TF1: scenario nominale, tutti i campi validi -> nessuna eccezione (O1)")
+void tf1_nominal() {
+    // Arrange
+    Notification notification = mockNotification();
+
+    NotificationTO to = validNotificationTO();
+    to.getStaticRecipients().add("user@example.com");
+    to.getAbouts().put("USER", "cond==true");
+    to.setRecipientsProvider("provider-1");
+
+    MailTemplate template = mock(MailTemplate.class);
+    doReturn(Optional.of(template)).when(mailTemplateDAO).findById("mail-template-1");
+
+    AnyType anyType = mock(AnyType.class);
+    doReturn(Optional.of(anyType)).when(anyTypeDAO).findById("USER");
+    doReturn(Optional.empty()).when(notification).getAbout(eq(anyType));
+    AnyAbout newAbout = mock(AnyAbout.class);
+    when(entityFactory.newEntity(AnyAbout.class)).thenReturn(newAbout);
+
+    Implementation provider = mock(Implementation.class);
+    doReturn(Optional.of(provider)).when(implementationDAO).findById("provider-1");
+
+    // intAttrNameParser.parse(...) non stubbato -> comportamento di default (nessuna eccezione)
+
+    // Act
+    assertDoesNotThrow(() -> binder.update(notification, to));
+
+    // Assert
+    verify(notification).setTemplate(template);
+    verify(notification).add(newAbout);
+    verify(notification).setRecipientsProvider(provider);
+}
+
+@Test
+@DisplayName("TF2: notification nulla -> NullPointerException (O2)")
+void tf2_notificationNull() {
+     // Arrange
+     NotificationTO to = validNotificationTO();
+
+     // Act & Assert
+     assertThrows(NullPointerException.class, () -> binder.update(null, to));
+}
+
+Now, generate a complete JUnit 5 test file (NotificationDataBinderImplLLMFewShotTest.java) to test the following methods of the class named NotificationDataBinderImpl:
+- update(Notification notification, NotificationTO notificationTO)
+- getNotificationTO(Notification notification)

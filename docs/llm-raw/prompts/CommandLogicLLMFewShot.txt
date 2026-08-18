@@ -1,0 +1,58 @@
+As a professional software tester who writes Java test methods, consider the following examples:
+
+@Test
+@DisplayName("TF1: keyword con wildcard/match, pageable nominale, 3 elementi -> pagina popolata (O1)")
+void tf1_nominal() {
+    // Arrange
+    Implementation impl1 = mockImplementation("cmd1");
+    Implementation impl2 = mockImplementation("cmd2");
+    Implementation impl3 = mockImplementation("cmd3");
+    when(implementationDAO.findByTypeAndKeyword(IdRepoImplementationType.COMMAND, "%backup%")).
+            thenReturn(List.of(impl1, impl2, impl3));
+
+    try (MockedStatic<ImplementationManager> im = mockStatic(ImplementationManager.class)) {
+        im.when(() -> ImplementationManager.emptyArgs(anyString(), any(Implementation.class))).
+                thenReturn(new CommandArgs());
+
+        // Act
+        Page<CommandTO> page = commandLogic.search("%backup%", PageRequest.of(0, 10));
+
+        // Assert
+        assertEquals(3, page.getContent().size());
+        assertEquals(3, page.getTotalElements());
+        assertEquals(List.of("cmd1", "cmd2", "cmd3"),
+                page.getContent().stream().map(CommandTO::getKey).toList());
+    }
+}
+
+@Test
+@DisplayName("TF7: args con violazioni di vincolo -> SyncopeClientException InvalidValues (O5)")
+void tf7_argsWithViolations() {
+    // Arrange
+    Implementation impl = mockImplementation("clear-cache");
+    doReturn(Optional.of(impl)).when(implementationDAO).findById("clear-cache");
+    ConstraintViolation<Object> violation = mockViolation();
+    when(validator.validate(any())).thenReturn(Set.of(violation));
+
+    @SuppressWarnings("unchecked")
+    Command<CommandArgs> runnable = mock(Command.class);
+
+    CommandTO command = new CommandTO.Builder("clear-cache").args(new CommandArgs()).build();
+
+    try (MockedStatic<ImplementationManager> im = mockStatic(ImplementationManager.class)) {
+        im.when(() -> ImplementationManager.build(anyString(), eq(impl), any(), any())).
+                thenReturn(runnable);
+
+        // Act
+        SyncopeClientException sce = assertThrows(SyncopeClientException.class,
+                () -> commandLogic.run(command));
+
+        // Assert
+        assertEquals(ClientExceptionType.InvalidValues, sce.getType());
+    }
+}
+
+Now, generate a complete JUnit 5 test file (CommandLogicLLMFewShotTest.java) to test the following methods of the class named CommandLogic:
+- search(String keyword, Pageable pageable)
+- run(CommandTO command)
+

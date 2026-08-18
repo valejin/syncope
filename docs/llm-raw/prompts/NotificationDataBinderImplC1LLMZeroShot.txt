@@ -1,0 +1,5 @@
+As a professional software tester who writes Java test methods, generate a complete JUnit 5 test file (NotificationDataBinderImplC1LLMZeroShotTest.java) to test the following methods of the class named NotificationDataBinderImpl:
+- update(Notification notification, NotificationTO notificationTO)
+- getNotificationTO(Notification notification)
+
+Your output file must start with ###Test START## and finish with ###Test END##.

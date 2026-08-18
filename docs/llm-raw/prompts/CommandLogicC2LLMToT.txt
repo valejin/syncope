@@ -1,0 +1,12 @@
+Imagine three different experts in software testing who are tasked with developing comprehensive JUnit 5 test cases for the following Java class. To comprehensively test the following methods of the class named CommandLogic:
+- search(String keyword, Pageable pageable)
+- run(CommandTO command)
+
+they must following these steps:
+- Extract and list the signatures of the two methods above
+- For each method, generate a basic JUnit 5 test case that checks the method's functionality
+- Given the source code of the class and the listed methods, identify potential edge cases and exception handling scenarios that should be tested
+- Generate JUnit 5 test cases that specifically test for the identified edge cases and exceptions
+- Merge all the individual test cases into a complete JUnit 5 test file CommandLogicToTTest.java
+
+All experts will propose one test cases for each method, share it with the group, and then proceed to the next step. If any expert realizes they're wrong at any point, they leave.

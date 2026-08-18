@@ -1,0 +1,11 @@
+You are an expert Java developer. I want to improve the maintainability of the attached C_0 class (CommandLogic.java, from Apache Syncope, package org.apache.syncope.core.logic).
+
+Create C_2 without changing C_0 functionality and by removing the following smells, as reported by SonarCloud: the rule "Replace 'e' with an unnamed pattern" (a Java 22 unnamed pattern suggestion for an unused exception variable), classified under the Intentionality category with Maintainability impact and Minor severity, tagged java22, which occurs five times in the class at lines 77, 97, 117, 129 and 142.
+
+Make sure C_2 passes the attached Black Box test suite (CommandLogicBBTest.java), which was designed with Category Partition and Boundary Value Analysis and is attached as a separate file. These tests must continue to pass unchanged against the refactored class.
+
+Do not include in C_2 changes different from what I asked. In fact, consider that C_2 should replace C_0 and work with the other components of the system exactly as C_0 currently does, so keep method signatures and the public interface unchanged.
+
+Return the entire refactored class as a single complete Java file, from the package declaration and imports down to the final closing brace, ready to replace C_0 as-is, not a diff, snippet, or partial excerpt.
+
+This is an important request; take all the time you need to provide a complete and accurate answer to this request.
